@@ -8,36 +8,17 @@
     {
         console.log("Home Page");
 
-        let AboutUsButton = document.getElementById("AboutUsButton");
-        AboutUsButton.addEventListener("click", function()
+        $("#AboutUsButton").on("click", () => 
         {
             location.href = "about.html";
         });
 
-        // Step 1 - get a reference to an entry point(s) (insertion / deletion point)
-        let MainContent = document.getElementsByTagName("main")[0];
-        let DocumentBody = document.body;
-        
-        // Step 2 - Create a HTML Element in memory
-        let MainParagraph = document.createElement("p");
-        let Article = document.createElement("article");
-        let ArticleParagraph = `<p id="ArticleParagraph" class="mt-3">This is the Article Paragraph</p>`;
+        $("main").append(`<p id="MainParagraph" class="mt-3">This is the Main Paragraph</p>`);
 
-        // Step 3 - Configure new Element
-        MainParagraph.setAttribute("id", "MainParagraph");
-        MainParagraph.setAttribute("class", "mt-3");
-        let FirstString = "This is";
-        let SecondString = `${FirstString} the Main Paragraph`;
-        MainParagraph.textContent = SecondString;
-        Article.setAttribute("class", "container");
-
-
-        // Step 4 - perform insertion / deletion
-
-        // example of insert after (append)
-        MainContent.appendChild(MainParagraph);
-        Article.innerHTML = ArticleParagraph;
-        DocumentBody.appendChild(Article);
+        $("body").append(`
+        <article class="container">
+            <p id="ArticleParagraph" class="mt-3">This is the Article Paragraph</p>
+            </article>`);
 
     }
 
@@ -56,6 +37,24 @@
         console.log("Our Services Page");
     }
 
+    /**
+     * Adds a Contact Object to localStorage
+     *
+     * @param {string} fullName
+     * @param {string} contactNumber
+     * @param {string} emailAddress
+     */
+    function AddContact(fullName, contactNumber, emailAddress)
+    {
+        let contact = new core.Contact(fullName, contactNumber, emailAddress);
+        if(contact.serialize())
+        {
+            let key = contact.FullName.substring(0, 1) + Date.now();
+
+            localStorage.setItem(key, contact.serialize());
+        }
+    }
+
     function DisplayContactPage()
     {
         console.log("Contact Us Page");
@@ -66,14 +65,8 @@
         sendButton.addEventListener("click", function()
         {
             if(subscribeCheckbox.checked)
-            {
-                let contact = new Contact(fullName.value, contactNumber.value, emailAddress.value);
-                if(contact.serialize())
-                {
-                    let key = contact.FullName.substring(0, 1) + Date.now();
-
-                    localStorage.setItem(key, contact.serialize());
-                }
+            { 
+                AddContact(fullName.value, contactNumber.value, emailAddress.value);
             }
         });
     }
@@ -96,7 +89,7 @@
             {
                 let contactData = localStorage.getItem(key); // get localStorage data value related to the key
 
-                let contact = new Contact(); // create a new empty contact object
+                let contact = new core.Contact(); // create a new empty contact object
                 contact.deserialize(contactData);
 
                 // inject a repeatable row into the contactList
@@ -105,8 +98,8 @@
                 <td>${contact.FullName}</td>
                 <td>${contact.ContactNumber}</td>
                 <td>${contact.EmailAddress}</td>
-                <td></td>
-                <td></td>
+                <td class="text-center"><button value="${key}" class="btn btn-primary btn-sm edit"><i class="fas fa-edit fa-sm"></i> Edit</button></td>
+                <td class="text-center"><button value="${key}" class="btn btn-danger btn-sm delete"><i class="fas fa-trash-alt fa-sm"></i> Delete</button></td>
                 </tr>
                 `;
 
@@ -114,8 +107,97 @@
             }
 
             contactList.innerHTML = data;
+
+            $("#addButton").on("click",() =>
+            {
+                location.href = "edit.html#add";
+            });
+
+            $("button.delete").on("click", function()
+            {
+                if(confirm("Are you sure?"))
+                {
+                    localStorage.removeItem($(this).val());
+                }
+
+                // refresh after deleting
+                location.href = "contact-list.html";
+            });
+
+            $("button.edit").on("click", function()
+            {
+                location.href = "edit.html#" + $(this).val();
+            });
         }
     }
+
+    function DisplayEditPage()
+    {
+        console.log("Edit Page");
+
+        let page = location.hash.substring(1);
+
+        switch(page)
+        {
+            case "add":
+                {
+                    $("main>h1").text("Add Contact");
+
+                    $("#editButton").html(`<i class="fas fa-plus-circle fa-lg"></i> Add`);
+
+                    $("#editButton").on("click", (event)=>
+                    {
+                        event.preventDefault();
+                        // Add Contact
+                        AddContact(fullName.value, contactNumber.value, emailAddress.value);
+                        // refresh the contact-list page
+                        location.href = "contact-list.html";
+                    });
+
+                    $("#cancelButton").on("click", () =>
+                    {
+                        location.href = "contact-list.html";
+                    });
+                }
+                break;
+            default:
+                {
+                    // get the contact  info from localStorage
+                    let contact = new core.Contact();
+                    contact.deserialize(localStorage.getItem(page));
+
+                    // display the contact info in the edit form
+                    $("#fullName").val(contact.FullName);
+                    $("#contactNumber").val(contact.ContactNumber);
+                    $("#emailAddress").val(contact.EmailAddress);
+
+                    // when editButton is pressed - update the contact
+                    $("#editButton").on("click", (event)=>
+                    {
+                        event.preventDefault();
+
+                        // get any changes from the form
+                        contact.FullName = $("#fullName").val();
+                        contact.ContactNumber = $("#contactNumber").val();
+                        contact.EmailAddress = $("#emailAddress").val();
+
+                        // replace the item in localStorage
+                        localStorage.setItem(page, contact.serialize());
+
+                        // return to the contact-list
+                        location.href = "contact-list.html";
+                    });
+
+                    $("#cancelButton").on("click", () =>
+                    {
+                        location.href = "contact-list.html";
+                    });
+
+                }
+                break;
+        }
+    }
+
 
 
     // named function
@@ -141,7 +223,10 @@
             break;
           case "Contact Us":
             DisplayContactPage();
-            break;
+                break;
+          case "Edit":
+             DisplayEditPage();
+                 break;
         }
     }
     

@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contact-List</title>
+    <title>Our Products</title>
     <!-- CSS Section -->
     <link rel="stylesheet" href="./node_modules/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="./node_modules/@fortawesome/fontawesome-free/css/all.min.css">
@@ -32,7 +32,9 @@
                             <a class="nav-link " href="about.html"><i class="fas fa-info"></i> About Us</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="projects.html"><i class="fas fa-project-diagram"></i> Projects</a>
+                            <a class="nav-link active" aria-current="page" href="products.html"><i
+                                    class="fas fa-project-diagram"></i>
+                                Products</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="services.html"><i class="fas fa-map-signs"></i> Services</a>
@@ -47,36 +49,13 @@
         </nav>
     </header>
 
-    <main class="container">
-        <h1>Contact List</h1>
-
-        <div class="row">
-            <div class="col">
-                <button id="addButton" class="btn btn-primary mb-1"><i class="fas fa-plus-circle"> Add Contact</i></button>
-                <table class="table table-striped table-bordered table-hover">
-                    <thead class="table-dark">
-                        <tr>
-                            <th scope="col" class="text-center">#</th>
-                            <th scope="col">Full Name</th>
-                            <th scope="col">Contact Number</th>
-                            <th scope="col">Email Address</th>
-                            <th scope="col"></th>
-                            <th scope="col"></th>
-                        </tr>
-                    </thead>
-                    <tbody id="contactList">
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </main>
+    <div class="container">
+        <h1>Welcome to Our Products</h1>
+    </div>
 
     <!-- Scripting Section -->
     <script src="./node_modules/jquery/dist/jquery.min.js"></script>
     <script src="./node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
-
-    <script src="./Scripts/namespace.js"></script>
-    <script src="./Scripts/contact.js"></script>
     <script src="./Scripts/app.js"></script>
 </body>
 

@@ -408,7 +408,7 @@
     {
         ValidateField("firstName", /^[a-zA-Z]{2,}$/,"Please enter a valid First Name having at least two characters.");
         ValidateField("lastName", /^[a-zA-Z]{2,}$/,"Please enter a valid Last Name having at least two characters.");      
-        ValidateField("emailAddress", /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,10}$/, "Please enter a valid Email Address.");
+        ValidateField("emailAddress", /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]{8,}$/, "Please enter a valid Email Address.");
         ValidateField("password", /^[a-zA-Z0-9]{6,}$/,"Please enter a valid password having at least six characters.");  
         ComparePasswordFields("confirmPassword","Please enter a valid confirm password same as password.");
     }

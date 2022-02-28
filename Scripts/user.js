@@ -2,7 +2,46 @@
 
     class User
     {
-        // TODO: missing Getters and Setters
+        // getters and setters
+        get DisplayName()
+        {
+            return this.m_displayName;
+        }
+    
+        set DisplayName(display_name)
+        {
+            this.m_displayName = display_name;
+        }
+    
+        get EmailAddress()
+        {
+            return this.m_emailAddress;
+        }
+    
+        set EmailAddress(email_address)
+        {
+            this.m_emailAddress = email_address;
+        }
+
+        get UserName()
+        {
+            return this.m_userName;
+        }
+    
+        set UserName(user_name)
+        {
+            this.m_userName = user_name;
+        }
+
+        get Password()
+        {
+            return this.m_password;
+        }
+    
+        set Password(password)
+        {
+            this.m_password = password;
+        }
 
         // constructor
         constructor(displayName = "", emailAddress = "", username ="", password = "")
@@ -16,7 +55,7 @@
         // overriden methods
         toString()
         {
-            return `Display Name : ${this.DisplayName}\nEmail Address : ${this.EmailAddress}\nUsername : ${this.Username}`;
+            return `Display Name : ${this.DisplayName}\nEmail Address : ${this.EmailAddress}\nUsername : ${this.Username}\nPassword : ${this.Password}`;
         }
 
         // utility methods

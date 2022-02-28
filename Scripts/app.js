@@ -35,45 +35,13 @@
     /**
      * This function loads the Navbar from the header file and injects into the page
      *
+     * @param {string} data
      */
-    function LoadHeader()
+    function LoadHeader(data)
     {
-        $.get("./Views/components/header.html", function(html_data)
-        {
-            $("header").html(html_data);
-
-            document.title = router.ActiveLink.substring(0, 1).toUpperCase() +
-                router.ActiveLink.substring(1);
-
-            $(`li>a:contains(${document.title})`).addClass("active");
-            CheckLogin();
-        });
-        
-    }
-
-    /**
-     *
-     *
-     * @returns {void}
-     */
-    function LoadContent()
-    {
-        let page_name = router.ActiveLink; //alias
-        let callback = ActiveLinkCallBack();
-        $.get(`./Views/content/${page_name}.html`, function(html_data)
-        {
-            $("main").html(html_data);
-
-            callback();
-        });
-    }
-
-    function LoadFooter()
-    {
-        $.get("./Views/components/footer.html", function(html_data)
-        {
-            $("footer").html(html_data);
-        });
+        $("header").html(data);
+        $(`li>a:contains(${document.title})`).addClass("active");
+        CheckLogin();
     }
 
     function DisplayHome()
@@ -84,7 +52,7 @@
 
         $("#AboutUsButton").on("click", () => 
         {
-            location.href = "/about";
+            location.href = "about.html";
         });
 
         $("main").append(`<p id="MainParagraph" class="mt-3">This is the Main Paragraph</p>`);
@@ -221,7 +189,7 @@
 
             $("#addButton").on("click",() =>
             {
-                location.href = "/edit#add";
+                location.href = "edit.html#add";
             });
 
             $("button.delete").on("click", function()
@@ -232,12 +200,12 @@
                 }
 
                 // refresh after deleting
-                location.href = "/contact-list";
+                location.href = "contact-list.html";
             });
 
             $("button.edit").on("click", function()
             {
-                location.href = "/edit#" + $(this).val();
+                location.href = "edit.html#" + $(this).val();
             });
         }
     }
@@ -264,12 +232,12 @@
                         // Add Contact
                         AddContact(fullName.value, contactNumber.value, emailAddress.value);
                         // refresh the contact-list page
-                        location.href = "/contact-list";
+                        location.href = "contact-list.html";
                     });
 
                     $("#cancelButton").on("click", () =>
                     {
-                        location.href = "/contact-list";
+                        location.href = "contact-list.html";
                     });
                 }
                 break;
@@ -298,12 +266,12 @@
                         localStorage.setItem(page, contact.serialize());
 
                         // return to the contact-list
-                        location.href = "/contact-list";
+                        location.href = "contact-list.html";
                     });
 
                     $("#cancelButton").on("click", () =>
                     {
-                        location.href = "/contact-list";
+                        location.href = "contact-list.html";
                     });
                 }
                 break;
@@ -350,7 +318,7 @@
                     messageArea.removeAttr("class").hide();
 
                     // redirect the user to the secure area of the site - contact-list.html
-                    location.href = "/contact-list";
+                    location.href = "contact-list.html";
                 }
                 else
                 {
@@ -367,8 +335,22 @@
             document.forms[0].reset();
 
             // return to the home page
-            location.href = "/home";
+            location.href = "index.html";
         });
+    }
+
+    //Created function for adding a loggedIn username link
+    function AddUsernameLink()
+    {
+        let usernameListItem = document.createElement("li");
+        usernameListItem.setAttribute("class","nav-item");
+
+        console.log("user = ", sessionStorage.getItem("user"));
+
+        usernameListItem.innerHTML = `<a class="nav-link" href="#"><i class="fas fa-user-circle"></i> ${sessionStorage.getItem("user").split(",")[0]}</a>`;
+
+        let list = document.getElementsByTagName("ul")[0];    // Get the <ul> element to insert a new node
+        list.insertBefore(usernameListItem, list.children[5]);
     }
 
     function CheckLogin()
@@ -381,50 +363,80 @@
                 `<a id="logout" class="nav-link" href="#"><i class="fas fa-sign-out-alt"></i> Logout</a>`
             );
 
+            AddUsernameLink();
+
             $("#logout").on("click", function()
             {
                 // perform logout
                 sessionStorage.clear();
                 
                 // redirect back to login page
-                location.href = "/login";
+                location.href = "login.html";
             });
         }
+    }
+
+    /**
+     * This method compares password and confirm password in the form and displays 
+     * an error in the message area if not same
+     *
+     * @param {string} input_field_ID
+     * @param {string} error_message
+     */
+    function ComparePasswordFields(input_field_ID, error_message)
+    {
+        let messageArea = $("#messageArea").hide();
+       
+        $("#" + input_field_ID).on("blur", function()
+        {   
+           // check if the password and confirm password entered matches
+            if($("#password").val() == $("#confirmPassword").val())
+            {
+                console.log("passwords matched!");
+                messageArea.removeAttr("class").hide();
+            }
+            else
+            {
+                // display an error message
+                $("#confirmPassword").trigger("focus").trigger("select");
+                messageArea.addClass("alert alert-danger").text(error_message).show();
+            }
+        });
+    }
+
+    function RegisterFormValidation()
+    {
+        ValidateField("firstName", /^[a-zA-Z]{2,}$/,"Please enter a valid First Name having at least two characters.");
+        ValidateField("lastName", /^[a-zA-Z]{2,}$/,"Please enter a valid Last Name having at least two characters.");      
+        ValidateField("emailAddress", /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,10}$/, "Please enter a valid Email Address.");
+        ValidateField("password", /^[a-zA-Z]{6,}$/,"Please enter a valid password having at least six characters.");  
+        ComparePasswordFields("confirmPassword","Please enter a valid confirm password same as password.");
     }
 
     function DisplayRegisterPage()
     {
         console.log("Register Page");
-    }
-
-    function Display404()
-    {
-
-    }
-
-    /**
-     * This function returns the appropriate callback function relative to the activeLink
-     *
-     * @returns {function}
-     */
-    function ActiveLinkCallBack()
-    {
-        switch (router.ActiveLink) 
-        {
-          case "home": return DisplayHome;
-          case "about": return DisplayAboutPage;
-          case "projects": return DisplayProjectsPage;
-          case "services": return DisplayServicesPage;
-          case "contact-list": return DisplayContactListPage;
-          case "contact": return DisplayContactPage;
-          case "edit": return DisplayEditPage;
-          case "login": return DisplayLoginPage;
-          case "register": return DisplayRegisterPage;
-          case "404": return Display404;
-          default:
-              console.error("ERROR: callback does not exist: " + router.ActiveLink);
-              break;
-        }
+   
+        RegisterFormValidation();
+        
+        let submitButton = document.getElementById("submitButton");
+        
+        submitButton.addEventListener("click", function (event) {
+           
+            event.preventDefault();
+            
+            // if validaton is success create User class and display it in the console
+            console.log("conditions passed!");
+            
+            let newUser = new core.User(firstName.value + " " + lastName.value, emailAddress.value, firstName.value + lastName.value, password.value);
+           
+            //log to console the registerUser User object
+            console.log(newUser.toString());
+           
+            // Resetting registerForm id
+            document.getElementById("registerForm").reset();
+          
+        });
     }
 
     // named function
@@ -432,13 +444,44 @@
     {
         console.log("App Started!!");
 
-        LoadHeader()
+        AjaxRequest("GET", "header.html", LoadHeader);
 
-        LoadContent();
+        switch (document.title) 
+        {
+          case "Home":
+            DisplayHome();
+            break;
+          case "About Us":
+            DisplayAboutPage();
+            break;
+          case "Our Projects":
+            DisplayProjectsPage();
+            break;
+          case "Our Services":
+            DisplayServicesPage();
+            break;
+          case "Contact-List":
+            DisplayContactListPage();
+            break;
+          case "Contact Us":
+            DisplayContactPage();
+            break;
+          case "Edit":
+            DisplayEditPage();
+            break;
+            case "Login":
+            DisplayLoginPage();
+            break;
+            case "Register":
+            DisplayRegisterPage();
+            break;
+        }
 
-        LoadFooter();
+        
     }
     
+
     window.addEventListener("load", Start);
+
 
 })();
